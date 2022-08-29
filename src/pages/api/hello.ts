@@ -6,6 +6,11 @@ const prisma = new PrismaClient()
 
 const handler: NextApiHandler = async (req, res) => {
   res.statusCode = 200
-  res.json({ name: 'John Doe' })
+  const data = await prisma.post.findFirst({
+    where: {
+      title: "xxx"
+    }
+  })
+  res.json({ name: 'John Doe', data })
 }
 export default handler
