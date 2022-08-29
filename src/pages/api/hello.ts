@@ -8,22 +8,25 @@ const handler: NextApiHandler = async (req, res) => {
   const prisma = new PrismaClient({
     log: [{ level: "query", emit: "event" }]
   })
-  // prisma.$on("query", async (event) => {
-  //   console.log(event)
-  //   if (event.query.startsWith("SELECT")) {
-  //     const explain = `EXPLAIN ${event.query}`
-  //     const params = JSON.parse(event.params)
-  //     const result = await prisma.$queryRawUnsafe(explain, ...params)
-  //     console.log(result)
-  //     // const rr = await prisma.$queryRaw()
-  //     // console.log(rr)
-  //   }
-  // })
-  prisma.$use(async (params, next) => {
-    const result = await next(params)
-    console.log({ result, params })
-    return result
+  prisma.$on("query", async (event) => {
+    console.log(event)
+    if (!event.query.startsWith("SELECT")) {
+      return
+    }
+    const params = JSON.parse(event.params)
+    if (!Array.isArray(params)) {
+      return
+    }
+    const replaced = params.reduce((query, param, idx) => {
+      const replaced = typeof param === "number" ? param : `"${param}"`
+      return query.replace("?", replaced)
+    }, event.query)
+
+    const explain = `EXPLAIN ${replaced}`
+    const explainResult = await prisma.$queryRawUnsafe(explain)
+    console.log({ explain, explainResult })
   })
+
   const data = await prisma.post.findFirst({
     where: {
       title: "xxx"
