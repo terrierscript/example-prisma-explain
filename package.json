@@ -13,10 +13,12 @@
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "@prisma/client": "^4.2.1",
+    "@types/sqlstring": "^2.3.0",
     "framer-motion": "^7",
     "next": "^12.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "sqlstring": "^2.3.3",
     "vitest": "^0.22.1"
   },
   "devDependencies": {
